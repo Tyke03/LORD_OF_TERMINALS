@@ -1,4 +1,5 @@
-import { writeFileToRepo } from './utils/github.js';
+// terminal.js
+import { createBranch, writeFileToBranch } from './utils/github.js';
 
 const output = document.getElementById('output');
 const input = document.getElementById('input');
@@ -22,30 +23,19 @@ async function handleCommand(cmd) {
   const payload = rest.join(' ');
 
   switch (`${action} ${type}`) {
-    case 'page create':
-      appendToOutput(`Creating page: ${payload}`);
-      // future: auto create .html boilerplate if needed
+    case 'branch create': {
+      appendToOutput(`Creating branch: ${payload}`);
+      await createBranch(payload);
       break;
-
-    case 'html add':
-      const fileName = `pages/${payload}.html`;
-      const htmlContent = prompt(`Paste HTML content for ${payload}.html:`);
-      try {
-        await writeFileToRepo(fileName, htmlContent, `Add ${payload}.html`);
-        appendToOutput(`✅ ${fileName} written to GitHub.`);
-      } catch (err) {
-        appendToOutput(`❌ Error writing file: ${err.message}`);
-      }
+    }
+    case 'page create': {
+      const [pageName, , branchName] = payload.split('--branch').map(s => s.trim());
+      const htmlContent = `<!DOCTYPE html><html><head><title>${pageName}</title></head><body><h1>${pageName} page</h1></body></html>`;
+      const path = `pages/${pageName}.html`;
+      appendToOutput(`Creating page '${pageName}' in branch '${branchName}'`);
+      await writeFileToBranch(branchName, path, htmlContent);
       break;
-
-    case 'css add':
-      appendToOutput(`Adding CSS to ${payload}`);
-      break;
-
-    case 'js add':
-      appendToOutput(`Adding JS to ${payload}`);
-      break;
-
+    }
     default:
       appendToOutput(`Unknown command: ${cmd}`);
   }
