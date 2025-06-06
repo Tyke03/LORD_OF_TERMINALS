@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lord of Terminals</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="terminal">
+      <pre id="output">Lord of Terminals v0.1\nType a command to begin...</pre>
+      <input id="input" type="text" placeholder="Enter command..." autofocus />
+    </div>
+    <div id="sidebar">
+      <iframe id="chat" src="https://chat.openai.com/" title="Claude Panel"></iframe>
+    </div>
+  </div>
+  <script src="terminal.js"></script>
+</body>
+</html>
