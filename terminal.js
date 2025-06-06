@@ -47,9 +47,18 @@ async function handleCommand(cmd) {
       break;
     }
     case 'page create': {
-      const [pageName, , branchName] = payload.split('--branch').map(s => s.trim());
+      const match = payload.match(/(.*?)\s*--branch\s*(.*)/);
+      if (!match) {
+        appendToOutput("❌ Invalid syntax. Use: page create <name> --branch <branch>");
+        return;
+      }
+
+      const pageName = match[1].trim();
+      const branchName = match[2].trim();
+
       const htmlContent = `<!DOCTYPE html><html><head><title>${pageName}</title></head><body><h1>${pageName} page</h1></body></html>`;
       const path = `pages/${pageName}.html`;
+
       appendToOutput(`Creating page '${pageName}' in branch '${branchName}'`);
       await writeFileToBranch(branchName, path, htmlContent);
       break;
