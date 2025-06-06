@@ -1,3 +1,5 @@
+import { writeFileToRepo } from './utils/github.js';
+
 const output = document.getElementById('output');
 const input = document.getElementById('input');
 
@@ -22,17 +24,28 @@ async function handleCommand(cmd) {
   switch (`${action} ${type}`) {
     case 'page create':
       appendToOutput(`Creating page: ${payload}`);
-      // here we’ll later call a backend or GitHub API
+      // future: auto create .html boilerplate if needed
       break;
+
     case 'html add':
-      appendToOutput(`Adding HTML to ${payload}`);
+      const fileName = `pages/${payload}.html`;
+      const htmlContent = prompt(`Paste HTML content for ${payload}.html:`);
+      try {
+        await writeFileToRepo(fileName, htmlContent, `Add ${payload}.html`);
+        appendToOutput(`✅ ${fileName} written to GitHub.`);
+      } catch (err) {
+        appendToOutput(`❌ Error writing file: ${err.message}`);
+      }
       break;
+
     case 'css add':
       appendToOutput(`Adding CSS to ${payload}`);
       break;
+
     case 'js add':
       appendToOutput(`Adding JS to ${payload}`);
       break;
+
     default:
       appendToOutput(`Unknown command: ${cmd}`);
   }
