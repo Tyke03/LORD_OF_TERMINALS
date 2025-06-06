@@ -1,35 +1,40 @@
-// github.js
-const username = 'Tyke03';  // Your GitHub username
-const repo = 'Lord_of_Terminals';
-const branch = 'main';
+// utils/github.js
 
-export async function writeFileToRepo(path, content, commitMessage) {
-  const token = prompt("Enter GitHub personal access token (PAT):");
-  const url = `https://api.github.com/repos/${username}/${repo}/contents/${path}`;
+const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN'; // Replace with your personal access token
+const OWNER = 'Tyke03';
+const REPO = 'Lord_of_Terminals';
 
-  const getResp = await fetch(url, {
-    headers: { Authorization: `token ${token}` }
-  });
-
-  const existing = await getResp.json();
-  const sha = existing?.sha;
-
-  const body = {
-    message: commitMessage,
-    content: btoa(unescape(encodeURIComponent(content))),
-    branch,
-    ...(sha && { sha })
-  };
-
-  const resp = await fetch(url, {
-    method: 'PUT',
+async function githubRequest(endpoint, method = 'GET', body = null) {
+  const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/${endpoint}`, {
+    method,
     headers: {
-      Authorization: `token ${token}`,
-      'Content-Type': 'application/json'
+      'Authorization': `token ${GITHUB_TOKEN}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify(body)
+    body: body ? JSON.stringify(body) : null,
   });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(`${res.status}: ${error.message}`);
+  }
+  return await res.json();
+}
 
-  if (!resp.ok) throw new Error(await resp.text());
-  return await resp.json();
+export async function createBranch(branchName) {
+  const mainRef = await githubRequest('git/ref/heads/main');
+  const sha = mainRef.object.sha;
+  await githubRequest('git/refs', 'POST', {
+    ref: `refs/heads/${branchName}`,
+    sha,
+  });
+}
+
+export async function writeFileToBranch(branch, path, content) {
+  const encoded = btoa(unescape(encodeURIComponent(content)));
+  await githubRequest(`contents/${path}`, 'PUT', {
+    message: `Add ${path}`,
+    content: encoded,
+    branch,
+  });
 }
