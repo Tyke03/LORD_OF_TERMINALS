@@ -1,20 +1,35 @@
-// terminal.js
 console.log("✅ terminal.js loaded");
+
 import { createBranch, writeFileToBranch } from './utils/github.js';
 
 const output = document.getElementById('output');
 const input = document.getElementById('input');
 
-input.addEventListener('keydown', async (e) => {
-  if (e.key === 'Enter') {
-    const command = input.value.trim();
-    appendToOutput(`> ${command}`);
-    input.value = '';
-    await handleCommand(command);
-  }
-});
+console.log("📦 Output element:", output);
+console.log("📦 Input element:", input);
+
+if (!input) {
+  console.error("❌ Input element not found in DOM");
+} else {
+  input.addEventListener('keydown', async (e) => {
+    console.log("⌨️ Key pressed:", e.key);
+
+    if (e.key === 'Enter') {
+      const command = input.value.trim();
+      console.log("📥 Command received:", command);
+      appendToOutput(`> ${command}`);
+      input.value = '';
+      await handleCommand(command);
+    }
+  });
+}
 
 function appendToOutput(text) {
+  if (!output) {
+    console.error("❌ Output element missing. Cannot print:", text);
+    return;
+  }
+
   output.textContent += `\n${text}`;
   output.scrollTop = output.scrollHeight;
 }
@@ -22,6 +37,8 @@ function appendToOutput(text) {
 async function handleCommand(cmd) {
   const [action, type, ...rest] = cmd.split(' ');
   const payload = rest.join(' ');
+
+  console.log("🧠 Parsed command:", { action, type, payload });
 
   switch (`${action} ${type}`) {
     case 'branch create': {
@@ -39,5 +56,6 @@ async function handleCommand(cmd) {
     }
     default:
       appendToOutput(`Unknown command: ${cmd}`);
+      console.warn("⚠️ Unrecognized command structure:", cmd);
   }
 }
