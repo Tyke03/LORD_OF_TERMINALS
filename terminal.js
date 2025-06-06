@@ -1,4 +1,5 @@
 // terminal.js
+console.log("✅ terminal.js loaded");
 import { createBranch, writeFileToBranch } from './utils/github.js';
 
 const output = document.getElementById('output');
