@@ -21,7 +21,8 @@ async function githubRequest(endpoint, method = 'GET', body = null) {
   return await res.json();
 }
 
-export async function createBranch(branchName) {
+export { createBranch, writeFileToBranch, branchExists };
+ {
   const mainRef = await githubRequest('git/ref/heads/main');
   const sha = mainRef.object.sha;
   await githubRequest('git/refs', 'POST', {
