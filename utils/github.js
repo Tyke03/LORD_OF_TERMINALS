@@ -1,4 +1,4 @@
-const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN'; // Replace with your personal access token
+const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN;
 const OWNER = 'Tyke03';
 const REPO = 'Lord_of_Terminals';
 
