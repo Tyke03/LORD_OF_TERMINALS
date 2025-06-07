@@ -50,6 +50,3 @@ export async function branchExists(branchName) {
     throw e;
   }
 }
-
-// ✅ This line is key!
-export { createBranch, writeFileToBranch, branchExists };
